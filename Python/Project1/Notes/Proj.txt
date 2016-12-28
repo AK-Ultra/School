@@ -1,0 +1,15 @@
+game:
+Menu for user to pick mini game:
+-Artwork: 
+	sub: Starry Night, Mona Lisa, The Thinker, 
+-Famous Places: 
+	sub: Eiffel Tower, Taj Mahal, Mt Rushmore, Stone Henge
+- Animals:
+	sub: Lemur,  
+
+
+
+
+crop pieces of pictures
+have user guess picture
+reward for guessing correct

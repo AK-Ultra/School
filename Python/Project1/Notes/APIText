@@ -1,0 +1,72 @@
+'''
+Introduction to APIs
+API stands for Application Programmer Interface. APIs provide a 
+mechanism for accessing information from a website, such as Google Maps,
+ Facebook, Twitter, or NPR. The API is provided by the site and provides
+  specific instructions for how to access data and the kinds of data 
+  that is available. 
+
+On the www.microveggies.com website, there is an API that allows users 
+to access all of the data collected on the website, which includes 
+temperature, humidity, and soil moisture. (Disclaimer: there are some 
+oddities in the data that might suggest the sensors are not always 
+accurate.)
+
+On the API->All Data page, you can see the API calls available and 
+what each of them returns. The API call accesses a specific URL 
+depending on the data being requested. The URL also includes the 
+parameters for the request.
+
+For example,
+http://www.microveggies.com/data/get/temperature
+
+gets all of the temperature data. When you click Submit, or paste that 
+URL into a browser, you go to the URL, which queries the database, and 
+returns all data associated with temperature.
+
+Accessing APIs in Python
+You can access the API in python by using the python requests library. 
+Once we get the data back from microveggies, we need to do some 
+processing to get it into a format we can use. 
+
+The little bit of code we wrote to send the request works fine as long 
+as everything works. But, what if the website is down, or the data 
+doesn’t come back in the format we expect. We need to handle these 
+cases and that’s where the code starts to get long and involved. 
+For popular APIs, someone has generally already written the code to 
+handle all of the messy details, and we can just use their code. 
+
+Geopy
+When you go to maps.google.com and click on a point in Boulder, you get
+ an address. On a mac, if you do Cmd-click, you get an address and 
+ latitude, longitude.
+
+Cntrl click get a dropdown with options, including distance from here.
+Click another point and you get line between the two points.
+Drag the line and you get a third point added, with distances for each side.
+
+There’s an address and a lat,long for each point. 
+When I click on the map, something happens, I get information about the
+ location where I clicked. There’s code running to recognize that click 
+ event and the location on the screen where it occurred. 
+
+What we’re talking about today is the behind the scenes logic for how 
+the address and lat,long are determined and how that distance is 
+calculated. This process of converting locations to an address and an
+ address to a location is called geocoding. 
+
+You can do the geocoding yourself using geopy:
+ https://pypi.python.org/pypi/geopy
+which is an interface written in Python to use several geocoding APIs 
+provided by Google, Yahoo, Bing, and OpenStreetMap. Today, we’re going 
+to work with the Google geocoder to access the Google Maps API.
+
+The Geopy package that you installed is an interface to the Google maps
+ API, and a few others, and handles the request object and error 
+ handling. We just have to call the functions built into geopy.
+
+If you haven’t installed geopy yet, open a terminal on your VM and type:
+
+sudo pip install geopy
+'''
+
