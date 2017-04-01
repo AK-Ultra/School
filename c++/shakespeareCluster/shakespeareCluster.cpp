@@ -1,21 +1,11 @@
-/**********************
-Written by: ALLEN KEEF
-Class: ENGL 3000-010
-Assignment: Richard II Presentation 
-**********************/
-
 #include <iostream>
 #include <fstream>
-#include <cstdlib>
 #include <vector>
-#include <string>
-#include <sstream>
 #include <algorithm>
 #include <map>
 
 using namespace std;
 
-//Struct for Dynamic Array
 struct wordItem
 {
     string word;
@@ -28,134 +18,9 @@ struct options
 	string stopwords;
 };
 
-//Function for displaying menu
-void displayMainMenu();
-void displayOptionsMenu1();
-void displayOptionsMenu2();
-//Function to store inputs
-int getInput();
-//Function for options Menu
-options Options(int &num, string &StopWords);
-//Funciton for user input
-void handleUserInput();
-//Function to build word-int vector
-std::vector<wordItem> buildWordVector(string play, int num, string StopWords);
-//Functor to sort by Count then Word
-bool sortCount(const wordItem& lhs, const wordItem& rhs) { return lhs.count > rhs.count;}
-//Function to build stopword vector
-void getStopWords(string ignoreWordFileName, vector<string>& _vecIgnoreWords);
-//Check common words
-bool isCommonWord(string word, vector<string>& _vecIgnoreWords);
-//Function to print results
-void printTopN(std::vector<wordItem> v, int topN);
-void printUniquePara(std::vector<wordItem> v, int topN);
-//Function to return total non common words
-int getTotalNumberNonCommonWords(std::vector<wordItem> wordItemList, int Size);
-//Function to compare all plays and return unique list
-std::vector<wordItem> compareWordVector(std::vector<wordItem> v1, std::vector<wordItem> v2);
-
-/************
-MAIN FUNCTION
-************/
-
-int main(int argc, char* argv[])
-{
-	handleUserInput();
-	cout << "Goodbye!" << endl;
-    return 0;
-}
-
-/***************
-FUNCTIONS BLOCKS
-***************/
-
-void handleUserInput()
-{
-	bool quit = false;
-	string string_input;
-	string StopWords = "./resources/stopwords.txt";
-	int input;
-    int num = 50;
-
-	while (!quit)
-	{
-	    //Menus
-	    displayMainMenu();
-	    input = getInput();
-
-	    switch(input)
-    	{
-	    	case 1:
-	    	{
-	    		string play = "./resources/richard2.txt";
-	    		std::vector<wordItem> v1(num);
-	    		std::vector<wordItem> v2(num);
-	    		std::vector<wordItem> v3(num);
-	    		std::vector<wordItem> unique;
-	    		v1 = buildWordVector(play, num, StopWords);
-	    		v2 = buildWordVector("./resources/juliusCaesar.txt", num, StopWords);
-	    		v3 = buildWordVector("./resources/antonyCleopatra.txt", num, StopWords);
-	    		unique = compareWordVector(v1,v2);
-	    		unique = compareWordVector(unique,v3);
-	    		printTopN(v1,num);
-	    		printUniquePara(unique, unique.size());
-	    		break;
-	    	}
-
-	    	case 2:
-	    	{
-	    		string play = "./resources/juliusCaesar.txt";
-	    		std::vector<wordItem> v1(num);
-	    		std::vector<wordItem> v2(num);
-	    		std::vector<wordItem> v3(num);
-	    		std::vector<wordItem> unique;
-	    		v1 = buildWordVector(play, num, StopWords);
-	    		v2 = buildWordVector("./resources/richard2.txt", num, StopWords);
-	    		v3 = buildWordVector("./resources/antonyCleopatra.txt", num, StopWords);
-				unique = compareWordVector(v1,v2);
-	    		unique = compareWordVector(unique,v3);
-	    		printTopN(v1,num);
-	    		printUniquePara(unique, unique.size());
-	    		break;
-	    	}
-
-	    	case 3:
-	    	{
-	    		string play = "./resources/antonyCleopatra.txt";
-	    		std::vector<wordItem> v1(num);
-	    		std::vector<wordItem> v2(num);
-	    		std::vector<wordItem> v3(num);
-	    		std::vector<wordItem> unique;
-	    		v1 = buildWordVector(play, num, StopWords);
-	    		v2 = buildWordVector("./resources/richard2.txt", num, StopWords);
-	    		v3 = buildWordVector("./resources/juliusCaesar.txt", num, StopWords);
-				unique = compareWordVector(v1,v2);
-	    		unique = compareWordVector(unique,v3);
-	    		printTopN(v1,num);
-	    		printUniquePara(unique, unique.size());
-	    		break;
-	    	}
-
-	    	case 4:
-	    	{
-	    		options x;
-	    		x = Options(num, StopWords);
-	    		num = x.num;
-	    		StopWords = x.stopwords;
-	    		break;
-	    	}
-
-	    	case 5:
-	    	{
-	    		quit = true;
-	    		break;
-	    	}
-
-	    	default: 	// invalid input
-	        	cout << "Invalid Input" << endl;
-	            break;
-	    }
-	}
+bool sortCount(const wordItem& lhs, const wordItem& rhs) 
+{ 
+	return lhs.count > rhs.count;
 }
 
 std::vector<wordItem> compareWordVector(std::vector<wordItem> v1, std::vector<wordItem> v2)
@@ -178,72 +43,6 @@ std::vector<wordItem> compareWordVector(std::vector<wordItem> v1, std::vector<wo
 		
 	}
 	return outputVector;
-}
-
-std::vector<wordItem> buildWordVector(string play, int num, string StopWords)
-{
-    //Variables
-    string data;
-    int c = 0;
-
-    //Read in stopwords file into vector
-    vector<string> vecIgnoreWords(0);
-    getStopWords(StopWords, vecIgnoreWords);
-
-    //Stream in file
-    ifstream inFile;
-    inFile.open(play);
-
-    //Build wordCount Map
-    map<string, int> wordCount;
-    if (inFile.is_open())
-    {
-        //cout << "Sample file opened successfully" << endl;
-        while(inFile >> data)
-        {
-            //Remove Punctuation
-            for (int i = 0, len = data.size(); i < len; i++)
-            {
-                if (ispunct(data[i]))
-                {
-                    data.erase(i--, 1);
-                    len = data.size();
-                }
-            }
-            
-            //Make data lowercase
-            transform(data.begin(), data.end(), data.begin(), ::tolower);
-
-            if (isCommonWord(data,vecIgnoreWords) == true)
-            ;
-            else
-            {
-                ++wordCount[data];
-            }
-        }
-    }
-    else
-    {
-        cout << "Unable to open file" << endl;
-    }
-    inFile.close();
-
-    //Copy map to Vector
-    std::vector<wordItem> wordVector(wordCount.size());
-    for (map<string, int>::iterator it = wordCount.begin(); it != wordCount.end(); ++it)
-    {
-        wordVector[c].word = it->first;
-        wordVector[c].count = it->second;
-        c++;
-    }
-
-    //Sort Vector by Count
-    sort(wordVector.begin(), wordVector.end(), sortCount);
-
-    //Resize Vector
-    wordVector.resize(num);
-
-    return wordVector;
 }
 
 void getStopWords(string ignoreWordFileName, vector<string>& _vecIgnoreWords)
@@ -403,4 +202,159 @@ options Options(int &num, string &StopWords)
 	    }
 	}
 	return optionsResults;
+}
+
+std::vector<wordItem> buildWordVector(string play, int num, string StopWords)
+{
+    //Variables
+    string data;
+    int c = 0;
+
+    //Read in stopwords file into vector
+    vector<string> vecIgnoreWords(0);
+    getStopWords(StopWords, vecIgnoreWords);
+
+    //Stream in file
+    ifstream inFile;
+    inFile.open(play);
+
+    //Build wordCount Map
+    map<string, int> wordCount;
+    if (inFile.is_open())
+    {
+        //cout << "Sample file opened successfully" << endl;
+        while(inFile >> data)
+        {
+            //Remove Punctuation
+            for (int i = 0, len = data.size(); i < len; i++)
+            {
+                if (ispunct(data[i]))
+                {
+                    data.erase(i--, 1);
+                    len = data.size();
+                }
+            }
+            
+            //Make data lowercase
+            transform(data.begin(), data.end(), data.begin(), ::tolower);
+
+            if (isCommonWord(data,vecIgnoreWords) == true)
+            ;
+            else
+            {
+                ++wordCount[data];
+            }
+        }
+    }
+    else
+    {
+        cout << "Unable to open file" << endl;
+    }
+    inFile.close();
+
+    //Copy map to Vector
+    std::vector<wordItem> wordVector(wordCount.size());
+    for (map<string, int>::iterator it = wordCount.begin(); it != wordCount.end(); ++it)
+    {
+        wordVector[c].word = it->first;
+        wordVector[c].count = it->second;
+        c++;
+    }
+
+    //Sort Vector by Count
+    sort(wordVector.begin(), wordVector.end(), sortCount);
+
+    //Resize Vector
+    wordVector.resize(num);
+
+    return wordVector;
+}
+
+void handleUserInput()
+{
+	bool quit = false;
+	string string_input;
+	string StopWords = "./resources/stopwords.txt";
+	int input;
+    int num = 50;
+
+	while (!quit)
+	{
+	    //Menus
+	    displayMainMenu();
+	    input = getInput();
+
+	    switch(input)
+    	{
+	    	case 1:
+	    	{
+	    		string play = "./resources/richard2.txt";
+	    		std::vector<wordItem> v1(num);
+	    		std::vector<wordItem> v2(num);
+	    		std::vector<wordItem> v3(num);
+	    		std::vector<wordItem> unique;
+	    		v1 = buildWordVector(play, num, StopWords);
+	    		v2 = buildWordVector("./resources/juliusCaesar.txt", num, StopWords);
+	    		v3 = buildWordVector("./resources/antonyCleopatra.txt", num, StopWords);
+	    		unique = compareWordVector(v1,v2);
+	    		unique = compareWordVector(unique,v3);
+	    		printTopN(v1,num);
+	    		printUniquePara(unique, unique.size());
+	    		break;
+	    	}
+
+	    	case 2:
+	    	{
+	    		string play = "./resources/juliusCaesar.txt";
+	    		std::vector<wordItem> v1(num);
+	    		std::vector<wordItem> v2(num);
+	    		std::vector<wordItem> v3(num);
+	    		std::vector<wordItem> unique;
+	    		v1 = buildWordVector(play, num, StopWords);
+	    		v2 = buildWordVector("./resources/richard2.txt", num, StopWords);
+	    		v3 = buildWordVector("./resources/antonyCleopatra.txt", num, StopWords);
+				unique = compareWordVector(v1,v2);
+	    		unique = compareWordVector(unique,v3);
+	    		printTopN(v1,num);
+	    		printUniquePara(unique, unique.size());
+	    		break;
+	    	}
+
+	    	case 3:
+	    	{
+	    		string play = "./resources/antonyCleopatra.txt";
+	    		std::vector<wordItem> v1(num);
+	    		std::vector<wordItem> v2(num);
+	    		std::vector<wordItem> v3(num);
+	    		std::vector<wordItem> unique;
+	    		v1 = buildWordVector(play, num, StopWords);
+	    		v2 = buildWordVector("./resources/richard2.txt", num, StopWords);
+	    		v3 = buildWordVector("./resources/juliusCaesar.txt", num, StopWords);
+				unique = compareWordVector(v1,v2);
+	    		unique = compareWordVector(unique,v3);
+	    		printTopN(v1,num);
+	    		printUniquePara(unique, unique.size());
+	    		break;
+	    	}
+
+	    	case 4:
+	    	{
+	    		options x;
+	    		x = Options(num, StopWords);
+	    		num = x.num;
+	    		StopWords = x.stopwords;
+	    		break;
+	    	}
+
+	    	case 5:
+	    	{
+	    		quit = true;
+	    		break;
+	    	}
+
+	    	default: 	// invalid input
+	        	cout << "Invalid Input" << endl;
+	            break;
+	    }
+	}
 }
